@@ -1,0 +1,99 @@
+/* 
+    Document   : structure
+    Created on : 29-Jun-2011, 13:09:01
+    Author     : Alexey Popov <pa020@gre.ac.uk>
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+/* main block */
+#mainFrame {
+    height: 600px;
+    width: 1024px;
+    border: 1px grey solid;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -300px;
+    margin-left: -512px;
+
+}
+/* menu */
+#menu {
+    height: 50px;
+}
+
+/* title */
+.title {
+    height: 20px;
+}
+
+/* result window */
+.resultText {
+    height: 150px;
+}
+
+/* keyboard */
+#keyboard {
+    height: 370px;
+}
+
+.letter {
+    position: relative;
+    float: left;
+    height: 70px;
+    width: 80px;
+    border: 1px solid black;
+    margin: 5px;
+    
+}
+.letter2 {
+    position: relative;
+    float: left;
+    height: 70px;
+    width: 80px;
+    margin: 5px;
+    
+}
+.space {
+    width: 360px;
+}
+.button {
+    position: relative;
+    float: left;
+    height: 30px;
+    width: 80px;
+    border: 1px solid black;
+    margin: 5px;
+    
+}
+.button2 {
+    position: relative;
+    float: left;
+    height: 30px;
+    width: 80px;
+    border: 1px solid black;
+    margin: 5px;
+    
+}
+
+#time {
+    padding: 15px;
+}
+
+.chartItem {
+    position: relative;
+    float: left;
+    height: 116px;
+    width: 224px;
+    border: 1px solid black;
+}
+
+#chart {
+    padding: 0px 55px;
+}

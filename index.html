@@ -1,0 +1,148 @@
+<!DOCTYPE html> 
+<html>  
+    <head>
+        <title>Virtual Keyboard v2</title>
+        <link rel="stylesheet" href="css/jquery.mobile-1.0b1.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/main.css"/> 
+        <script src="js/jquery-1.6.2.min.js"></script>
+        <script src="js/jquery.mobile-1.0b1.min.js"></script>
+        <script src="js/phonegap.0.9.5.1.js"></script>
+        <script src="js/consts.js"></script>
+        <script src="js/dbManager.js"></script>
+        <script type="text/javascript">
+          
+            var device;
+            var keyboards;
+            var deviceName = Consts.EMPTY_STRING;
+            
+            console.log("Starting load data");
+            $( loadDeviceData );
+            console.log("Databeen loaded");
+            $( initDatabase );
+            console.log("device name: " + deviceName);
+            var text = document.createTextNode( "text" + deviceName );
+            $('#resultText').append(deviceName);
+        
+            //$( creatFirstKeyboard );
+                
+            // loading data from the service
+            function loadDeviceData(){
+                console.log("Loading data from " + Consts.SERVICE_LINK + Consts.LOAD_DEVICE_METHOD + Consts.DEVICE_ID);
+                //alert(Consts.LOAD_DEVICE_LINK + Consts.DEVICE_ID);
+                $.ajax({
+                    async: false,
+                    url: Consts.SERVICE_LINK + Consts.LOAD_DEVICE_METHOD + Consts.DEVICE_ID,
+                    dataType: "json",
+                    success: function(json){
+                        device = json;
+                        console.log("Data been loaded. Device: " + device.name);
+                        keyboards = device.patientToolsData.keyboards;
+                    },
+                    error: function(e){
+                        console.log("Could not load data. " + e);
+                    }
+                });
+            }
+            // creating first keyboard using device data
+            function creatFirstKeyboard(){
+                createKeyboard(0);
+            }
+            
+            
+            // creating any keyboard by number 
+            function createKeyboard(keyboardNumber){
+                var keyboard = keyboards[keyboardNumber];
+                console.log("Creating new keyboard: " + keyboard.name);
+                var letters = keyboard.letters;
+                //.sort(function(a, b){return b.positionAlphabetic - a.positionAlphabetic})
+                $.each(letters, function(index, value) {
+                    var newDivLetter = document.createElement("div");
+                    var newDivLetterText = document.createTextNode( value.letter );
+                    newDivLetter.setAttribute("id", "Letter" + value.letter);
+                    newDivLetter.setAttribute("data-role", "button");
+                    newDivLetter.setAttribute("class", "letter2");
+                    newDivLetter.setAttribute("onclick", "catchKeyPress('"+value.letter+"')");
+                    newDivLetter.appendChild( newDivLetterText );
+                    $('#keyboard').append( newDivLetter );
+                
+                })
+               
+                var newSpace = document.createElement("div");
+                var newDivSpaceText = document.createTextNode( "Space" );
+                newSpace.setAttribute("id", "LetterSpace");
+                newSpace.setAttribute("data-role", "button");
+                newSpace.setAttribute("class", "letter2");
+                newSpace.setAttribute("onclick", "catchKeyPress('&nbsp;')");
+                newSpace.appendChild( newDivSpaceText );
+                $('#keyboard').append( newSpace );
+                
+                var newBackSpace = document.createElement("div");
+                var newBackSpaceText = document.createTextNode( "BackSpace" );
+                newBackSpace.setAttribute("id", "LetterBackSpace");
+                newBackSpace.setAttribute("data-role", "button");
+                newBackSpace.setAttribute("class", "letter2");
+                newBackSpace.setAttribute("onclick", "backSpace()");
+                newBackSpace.appendChild( newBackSpaceText );
+                $('#keyboard').append( newBackSpace );
+                  
+                ;}
+            
+            function backSpace(){
+                var str = $('#keyboardResultText').html();
+                var newStr ;
+                if(str.substring(str.length-6) == '&nbsp;')
+                    newStr = str.substring(0, str.length-6);
+                else 
+                    newStr = str.substring(0, str.length-1);
+                $('#keyboardResultText').html(newStr);
+            }
+            // catching key press and ammending letter to the result div
+            function catchKeyPress(letter){
+                
+                $('#keyboardResultText').append(letter);
+            }
+        </script>
+    </head>
+    <body>
+
+        <div id="keyboardScreen" data-role="page" > 
+            <div data-role="header">
+                <div data-role="navbar">
+                    <a href="#keyboardScreen" data-role="button">Keyboard</a>
+                    <a href="#chartScreen" data-role="button">Chart Screen</a>
+                </div>
+                <div id="time"></div>
+                <div class="title" id="keyboardTitle">Keyboard
+                </div>
+            </div>
+
+            <div class="resultText" id="keyboardResultText" data-role="content">
+
+            </div>
+            <div id="keyboard" data-role="content">
+
+            </div>
+        </div>   
+        <div id="chartScreen" data-role="page">
+            <div data-role="header">
+                <div data-role="navbar">
+                    <a href="#keyboardScreen" data-role="button">Keyboard</a>
+                    <a href="#chartScreen" data-role="button">Chart Screen</a>
+                </div>
+                <div id="time"></div>
+                <div class="title" id="chartTitle">Chart
+                </div>
+            </div>
+            <div data-role="content">
+
+                <div class="resultText" id="chartResultText" data-role="content">
+
+                </div>
+                <div id="chart" data-role="content">
+
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
