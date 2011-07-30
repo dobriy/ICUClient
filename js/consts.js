@@ -6,6 +6,19 @@ var Consts = {
     
 };
 
+var Message = {
+    LOADING_DATA : 'Loading data, please wait...',
+    LOADING_KEYOBARD : 'Loading keyboard data, please wait...'
+}
+
+var Id = {
+    TIME : 'time',
+    KEYBOARD : 'keyboard',
+    KEYBOARD_RESULT : 'keyboardResultText',
+    CHART : 'chart',
+    CHART_RESULT : 'chartResultText'
+}
+
 var DBTables = {
     DB_NAME : "icuData",
     DEVICE : {
@@ -18,6 +31,10 @@ var DBTables = {
         name : "keyboard",
         fieldsToInsert : "",
         fields : ""
+    },
+    LETTER : {
+        name : "letter",
+        keybaoradId : "keyboardId"
     },
     CHART : "chart",
     PICTURE : "picture"

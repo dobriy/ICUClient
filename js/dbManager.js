@@ -9,7 +9,7 @@ function initDatabase() {
         if (!window.openDatabase) {  
             alert('Databases are not supported in this browser.');  
         } else {  
-            var shortName = 'icuDb';  
+            var shortName = DBTables.DB_NAME;  
             var version = '1.0';  
             var displayName = DBTables.DB_NAME;  
             var maxSize = 1000000; //  bytes  
@@ -17,7 +17,7 @@ function initDatabase() {
             console.log("Database created");
             createTables();
             
-            selectAll(DBTables.DEVICE);
+        //selectAll(DBTables.DEVICE);
         }  
     } catch(e) {  
   
@@ -115,6 +115,46 @@ function selectAll(table){
     console.log("All been selected");
 }
 
+function loadKeyboards(){
+    console.log("Selecting keyboards");
+    icuDB.transaction(
+        function (transaction) {
+            transaction.executeSql("SELECT * FROM " + DBTables.KEYBOARD.name + ";", [], saveKeyboards, errorHandler);
+        });
+}
+
+function loadLetters(keyboardId){
+    console.log("Selecting Letters");
+    icuDB.transaction(
+        function (transaction) {
+            transaction.executeSql("SELECT * FROM " + DBTables.LETTER.name + "WHERE id = ?;", [DBTables.LETTER.keybaoradId], saveKeyboards, errorHandler);
+        })
+}
+
+function saveKeyboards(transaction, results){
+    console.log("Saving keyboard");
+    for (var i=0; i<results.rows.length; i++) {
+        var row = results.rows.item(i);
+        keyboards[i].name = row['keyboard.name'];
+        console.log("Loading letters of keyboard " + keyboards[i].name);
+        icuDB.transaction(
+            function (transaction) {
+                transaction.executeSql("SELECT * FROM " + DBTables.LETTER.name + "WHERE id = ?;", [DBTables.LETTER.keybaoradId], function(lettersTransaction, lettersResultSet ){
+                    for (var j=0; j<lettersResultSet.rows.length; j++){
+                        var letterRow = lettersResultSet.rows.item(i);
+                        keyboards[i].letters[j].letter = letterRow['letter'];
+                    }
+                }, errorHandler);
+            })
+       
+        
+        console.log("data: " + row['name']);
+        deviceName += " " + row['name'];
+        
+       
+    }
+}
+
 function dataSelectHandler(transaction, results){
     console.log("Handling data, number of results:  " + results.rows.length);
     //var text = document.createTextNode( "text"  );
@@ -129,7 +169,7 @@ function dataSelectHandler(transaction, results){
        
     }
     var textField = document.createTextNode( "text" + deviceName );
-        $('#keyboardTitle').append(textField);
+    $('#keyboardTitle').append(textField);
     alert (deviceName);
 
 }
