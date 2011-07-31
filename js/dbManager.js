@@ -2,7 +2,7 @@
  * Using http://blog.darkcrimson.com/2010/05/local-databases/
  *
  */
-var icuDb;
+
 function initDatabase() {  
     console.log("Starting creating database");
     try {  
@@ -32,36 +32,66 @@ function initDatabase() {
 } 
 
 /***
-**** CREATE TABLES ** 
-***/
+ **** CREATE TABLES ** 
+ ***/
 function createTables(){
     console.log("Creating tabels");
-    icuDb.transaction(
-        function (transaction) {
-            console.log("Creating table: " + DBTables.DEVICE.name);
-            transaction.executeSql(getCreateQuery(DBTables.DEVICE.name, DBTables.DEVICE.fieldsToInsert));    
-        }
-        );
-    console.log("Tables been created");
+    try {
+                truncateTable(DBTables.DEVICE.name);
+                truncateTable(DBTables.KEYBOARD.name);
+                truncateTable(DBTables.LETTER.name);
+
+        icuDb.transaction(
+            function (transaction) {
+               
+                console.log("Creating table: " + DBTables.DEVICE.name);
+                transaction.executeSql(getCreateQuery(DBTables.DEVICE.name, DBTables.DEVICE.fieldsToInsert));    
+                console.log("Creating table: " + DBTables.KEYBOARD.name);
+                transaction.executeSql(getCreateQuery(DBTables.KEYBOARD.name, DBTables.KEYBOARD.fieldsToInsert));    
+                console.log("Creating table: " + DBTables.LETTER.name);
+                transaction.executeSql(getCreateQuery(DBTables.LETTER.name, DBTables.LETTER.fieldsToInsert));    
+            }
+            );
+        console.log("Tables been created");
+    }
+    catch (e){
+        console.log("Error creating tables "+e+".");
+    }
             
-    insertData(DBTables.DEVICE, device);
+// insertData(DBTables.DEVICE, device);
 }
 
+function insertDataToDb(device){
+    try{
+        console.log("Inserting data to db");
+        console.log("Device")
+        var dataToInsert = new Array();
+        dataToInsert = [device.name, device.deviceId, new Date().toString()];
+        insertData(DBTables.DEVICE, dataToInsert);
+        console.log("Keyboard");
+        $.each(device.patientToolsData.keyboards, function(index, keyboard) {
+            console.log("Inserting data for keyboard " + keyboard.name);
+            dataToInsert = [keyboard.name, new Date().toString()]; 
+            insertData(DBTables.KEYBOARD, dataToInsert);
+            //var id = getLasId();
+            //  console.log("lastId: " + id);
+            $.each(keyboard.letters, function(index, letter){
+                dataToInsert = [letter.letter, letter.positionAlphabetic];
+                insertData(DBTables.LETTER, dataToInsert);
+            })
+        });
+    }
+    catch(e){
+        console.log("Error: " + e);
+    }
+}
 
 /***
-**** INSERT INTO TABLE ** 
-***/
-function insertData(table, data){
+ **** INSERT INTO TABLE ** 
+ ***/
+function insertData(table, dataToInsert){
     console.log("Inserting data for " + table.name);
-    var dataToInsert
-    switch (table.name) {
-        case DBTables.DEVICE.name:
-            dataToInsert = [data.name, data.deviceId, new Date().toString()]
-            break;
-        default:
-            break;
-    }
-    console.log("Starting transaction. data: " + dataToInsert + " size: " + dataToInsert.length);
+    //console.log("Starting transaction. data: " + dataToInsert + " size: " + dataToInsert.length);
     var values = Consts.EMPTY_STRING;
     for(i = 0; i < dataToInsert.length; i++){
         console.log("    element: " + i + ": " + dataToInsert[i])
@@ -69,10 +99,13 @@ function insertData(table, data){
         if(i< dataToInsert.length-1)
             values += ', ';
     }
+    if(table.name == DBTables.LETTER.name){
+        values += ', (SELECT max(id) FROM keyboard)';
+    }
     console.log("Values: " + values);
   
     var query = "INSERT INTO " + table.name + "(" + table.fields + ") VALUES (" + values + ")";
-    console.log("Query: " + query);
+    //console.log("Query: " + query);
           
     icuDb.transaction(
         function (transaction) {
@@ -84,8 +117,8 @@ function insertData(table, data){
 }
 
 /***
-**** UPDATE TABLE ** 
-***/
+ **** UPDATE TABLE ** 
+ ***/
 function updateSetting(){
     icuDb.transaction(
         function (transaction) {
@@ -117,7 +150,7 @@ function selectAll(table){
 
 function loadKeyboards(){
     console.log("Selecting keyboards");
-    icuDB.transaction(
+    icuDb.transaction(
         function (transaction) {
             transaction.executeSql("SELECT * FROM " + DBTables.KEYBOARD.name + ";", [], saveKeyboards, errorHandler);
         });
@@ -127,7 +160,7 @@ function loadLetters(keyboardId){
     console.log("Selecting Letters");
     icuDB.transaction(
         function (transaction) {
-            transaction.executeSql("SELECT * FROM " + DBTables.LETTER.name + "WHERE id = ?;", [DBTables.LETTER.keybaoradId], saveKeyboards, errorHandler);
+            transaction.executeSql("SELECT * FROM " + DBTables.LETTER.name + "WHERE id = ?;", [keyboardId], saveKeyboards, errorHandler);
         })
 }
 
@@ -179,8 +212,8 @@ function dataSelectHandler(transaction, results){
 
 
 /***
-**** Save 'default' data into DB table **
-***/
+ **** Save 'default' data into DB table **
+ ***/
 
 function saveAll(){
     insertData(1);
@@ -203,8 +236,8 @@ function nullDataHandler(){
 }
 
 /***
-**** DELETE DB TABLE ** 
-***/
+ **** DELETE DB TABLE ** 
+ ***/
 function dropTables(){
     icuDb.transaction(
         function (transaction) {
@@ -216,17 +249,44 @@ function dropTables(){
 }
 
 /***
-* Helper function
-*  
-*/
+ * Helper function
+ *  
+ */
 
 /**
-* returns string with create query, 
-* tableName table name
-* fields - all fields, except id
-* 
-*/
+ * returns string with create query, 
+ * tableName table name
+ * fields - all fields, except id
+ * 
+ */
 function getCreateQuery(tableName, fields){
     var query = 'CREATE TABLE IF NOT EXISTS ' + tableName + '(id INTEGER NOT NULL PRIMARY KEY, ' + fields + ')';
     return query;
+}
+
+function getLasId(){
+    var id;
+    icuDb.transaction(
+        function (transaction) {
+            transaction.executeSql("SELECT * FROM keyboard WHERE id = (SELECT max(id) FROM keyboard);", [], function(transaction, result){
+                
+                id = result.rows.item(0)['id'];  
+                console.log("id = " + id);
+
+            }, errorHandler);
+        });
+    console.log("id we returning: " + id);
+    return id;
+}
+
+function truncateTable(tableName){
+    
+    icuDb.transaction(
+        function (transaction) {
+            transaction.executeSql("TRUNCATE TABLE ?;", [tableName], function(transaction, result){
+                console.log("Trunctating table " + tableName);
+
+            }, errorHandler);
+        });
+    
 }

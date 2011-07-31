@@ -29,12 +29,14 @@ var DBTables = {
     },
     KEYBOARD : {
         name : "keyboard",
-        fieldsToInsert : "",
-        fields : ""
+        fieldsToInsert : "name TEXT NOT NULL, lastUpdate TEXT",
+        fields : "name, lastUpdate"
     },
     LETTER : {
         name : "letter",
-        keybaoradId : "keyboardId"
+        fieldsToInsert : "letter TEXT NOT NULL, positionalphabetic TEXT NOT NULL, keyboardId INTEGER NOT NULL, lastUpdate TEXT",
+        fields : "letter, positionalphabetic, keyboardId",
+        keybaordId : "keyboardId"
     },
     CHART : "chart",
     PICTURE : "picture"

@@ -16,12 +16,15 @@
                 console.log("Starting...");
                 console.log("Display loading msg");
                 showMsgInDiv(Id.KEYBOARD, Message.LOADING_KEYOBARD);
+                console.log("Initializing db...")
+                initDatabase();
                 //showToast(Message.LOADING_KEYOBARD);
                 displayKeyboard();
       
             });
+            var icuDb;
             var device;
-            var keyboards;
+            var keyboards = new Array();
             var deviceName = Consts.EMPTY_STRING;
             
             // console.log("Starting...");
@@ -30,6 +33,14 @@
             
             function displayKeyboard(){
                 
+                console.log("Trying to load keyboard from db");
+                loadKeyboards();
+                if(keyboards.length == 0){
+                    console.log("Loading data from the service");
+                    loadDeviceData();
+                    console.log("Inserting data to db")
+                }
+                console.log("keyboards size: " + keyboards.length);
                 // trying to load keyboard from db
                 
                 // if yes, displaying it here
@@ -44,7 +55,7 @@
             console.log("device name: " + deviceName);
             var text = document.createTextNode( "text" + deviceName );
             $('#resultText').append(deviceName);
-        
+        */
             //$( createFirstKeyboard );
                 
             // loading data from the service
@@ -56,9 +67,10 @@
                     url: Consts.SERVICE_LINK + Consts.LOAD_DEVICE_METHOD + Consts.DEVICE_ID,
                     dataType: "json",
                     success: function(json){
-                        device = json;
-                        console.log("Data been loaded. Device: " + device.name);
-                        keyboards = device.patientToolsData.keyboards;
+                        //device = json;
+                        console.log("Data been loaded. Device: " + json.name);
+                        //keyboards = device.patientToolsData.keyboards;
+                        insertDataToDb(json);
                     },
                     error: function(e){
                         console.log("Could not load data. " + e.status);
@@ -122,7 +134,7 @@
             function catchKeyPress(letter){
                 
                 $('#keyboardResultText').append(letter);
-            }*/
+            }
         </script>
     </head>
     <body>
