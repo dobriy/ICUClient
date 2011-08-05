@@ -2,7 +2,9 @@ var Consts = {
     SERVICE_LINK: "http://192.168.1.2:9998/ICUService/",
     DEVICE_ID : "c33177bd-c9ee-4c8c-88e0-f168f59d4f8a",
     LOAD_DEVICE_METHOD : "loadDeviceData/",
-    EMPTY_STRING : ''
+    EMPTY_STRING : '',
+    FIRST_INDEX_FLAG : -1,
+    HTML_SPACE : '&nbsp;'
     
 };
 
@@ -48,4 +50,28 @@ function Device(deviceData)  {
     this.name = deviceData.name,
     this.deviceId = deviceData.deviceId
    
+}
+
+function Letter(){
+    this.letter;
+    this.id;
+    this.positionAlphabetic;
+}
+
+function Keyboard(){
+    this.name;
+    this.id;
+    this.letters = new Array();
+}
+
+function LetterFromDb(row){
+    this.letter = row['letter'];
+    this.id = row['id'];
+    this.positionAlphabetic = row['positionalphabetic'];
+}
+
+function KeyboardFromDb(row){
+    this.name = row['name'];
+    this.id = row['id'];
+    this.letters = new Array();
 }

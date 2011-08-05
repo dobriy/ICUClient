@@ -37,10 +37,6 @@ function initDatabase() {
 function createTables(){
     console.log("Creating tabels");
     try {
-                truncateTable(DBTables.DEVICE.name);
-                truncateTable(DBTables.KEYBOARD.name);
-                truncateTable(DBTables.LETTER.name);
-
         icuDb.transaction(
             function (transaction) {
                
@@ -80,6 +76,7 @@ function insertDataToDb(device){
                 insertData(DBTables.LETTER, dataToInsert);
             })
         });
+        createFirstKeyboard();    
     }
     catch(e){
         console.log("Error: " + e);
@@ -152,8 +149,18 @@ function loadKeyboards(){
     console.log("Selecting keyboards");
     icuDb.transaction(
         function (transaction) {
-            transaction.executeSql("SELECT * FROM " + DBTables.KEYBOARD.name + ";", [], saveKeyboards, errorHandler);
+            transaction.executeSql("SELECT * FROM " + DBTables.KEYBOARD.name + ", " + DBTables.LETTER.name +" WHERE letter.keyboardId = keyboard.id ORDER BY COALESCE(keyboard.id, letter.positionalphabetic)", [], saveKeyboards, errorHandler);
         });
+}
+
+function loadKeyboard(keyboardId){
+    console.log("Loading keyboard id: " + keyboardId);
+    var query = "SELECT * FROM " + DBTables.KEYBOARD.name + ", " + DBTables.LETTER.name + " WHERE " + DBTables.KEYBOARD.name + ".id = ?" + 
+    icuDb.transaction(
+        function (transaction) {
+            transaction.executeSql("SELECT * FROM ?, ? WHERE ?.?" + DBTables.KEYBOARD.name + ". ", DBTables.LETTER.name )
+        }
+        )
 }
 
 function loadLetters(keyboardId){
@@ -165,26 +172,52 @@ function loadLetters(keyboardId){
 }
 
 function saveKeyboards(transaction, results){
-    console.log("Saving keyboard");
-    for (var i=0; i<results.rows.length; i++) {
-        var row = results.rows.item(i);
-        keyboards[i].name = row['keyboard.name'];
-        console.log("Loading letters of keyboard " + keyboards[i].name);
-        icuDB.transaction(
-            function (transaction) {
-                transaction.executeSql("SELECT * FROM " + DBTables.LETTER.name + "WHERE id = ?;", [DBTables.LETTER.keybaoradId], function(lettersTransaction, lettersResultSet ){
-                    for (var j=0; j<lettersResultSet.rows.length; j++){
-                        var letterRow = lettersResultSet.rows.item(i);
-                        keyboards[i].letters[j].letter = letterRow['letter'];
-                    }
-                }, errorHandler);
-            })
-       
+    
+    try{
+        console.log("Saving keyboards");
+        kbs = new Array();
+        var previousId = Consts.FIRST_INDEX_FLAG;
+        var letter = new Object();
+        var letters = new Array();
+        var letterIndex = 0;
+        if(results.rows.length > 0){
+            for (var i=0; i<results.rows.length; i++) {
+                if(i==0){
+                    var keyboradIndex = 0;
+                }
+                var row = results.rows.item(i);
+                var id = row['id'];
+                // checking if we have information about new keyboard
+                if(previousId!=id&&previousId!=Consts.FIRST_INDEX_FLAG){
+                    console.log("Saving new keyboard id " + previousId )
+                    var keyboard = new KeyboardFromDb(row);
+                    console.log("Adding letters to keyboard (" + letters.length + " )");
+                    keyboard.letters = letters;
+                    letters = new Array();
+                    keyboards[keyboradIndex] = ( keyboard );
+                    console.log("Keyboard with id " + previousId + " been added, now we have " + keyboards.length + " keyboards ");
+                    keyboradIndex++;
+                    letterIndex = 0;
+                }
+                // saving information about letters;
+                console.log("Loading letters for keyboard " + row['name'] + " index in array for prev keybaord : " + keyboradIndex);
+                console.log("Loaded letter: " + row['letter']);
+                letters[letterIndex] = (new LetterFromDb(row));
+                letterIndex++;
+                console.log(keyboards.length + " keyboards been saved");
+                previousId = id;
+            } 
+            console.log("Data from db loaded, showing keyboard");
+            createFirstKeyboard();    
+        }
+        else {
+            console.log("There is no data in db, loading it from service");
+            loadDeviceData();
+        }
         
-        console.log("data: " + row['name']);
-        deviceName += " " + row['name'];
-        
-       
+    
+    } catch(e){
+        console.error("Error saving keyboard: " + e);
     }
 }
 
@@ -277,16 +310,4 @@ function getLasId(){
         });
     console.log("id we returning: " + id);
     return id;
-}
-
-function truncateTable(tableName){
-    
-    icuDb.transaction(
-        function (transaction) {
-            transaction.executeSql("TRUNCATE TABLE ?;", [tableName], function(transaction, result){
-                console.log("Trunctating table " + tableName);
-
-            }, errorHandler);
-        });
-    
 }

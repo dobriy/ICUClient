@@ -9,6 +9,11 @@ function showMsgInDiv(id, msg){
     $('#' + id).html(msg);
 }
 
+function hideMsgInDiv(id){
+    console.log("Hiding msg");
+    $('#' + id).empty();
+}
+
 function showLoadingMsg(){
     $.mobile.showPageLoadingMsg();
 }
