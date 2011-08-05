@@ -4,9 +4,11 @@
         <title>Virtual Keyboard v2</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"> 
         <link rel="stylesheet" href="css/jquery.mobile-1.0b1.min.css" />
-       <link rel="stylesheet" type="text/css" href="css/main.css"/>
+        <link rel="stylesheet" type="text/css" href="css/main.css"/>
+        <link rel="stylesheet" type="text/css" href="css/jquery.mobile.simpledialog.min.css"/>
         <script src="js/jquery-1.6.2.min.js"></script>
         <script src="js/jquery.mobile-1.0b1.min.js"></script>
+        <script src="js/jquery.mobile.simpledialog.js"></script>
         <script src="js/phonegap.0.9.5.1.js"></script>
         <script src="js/consts.js"></script>
         <script src="js/dbManager.js"></script>
@@ -16,13 +18,15 @@
             $(document).ready(function() {
                 console.log("Starting...");
                 console.log("Display loading msg");
-                showMsgInDiv(Id.KEYBOARD, Message.LOADING_KEYOBARD);
+                //showMsgInDiv(Id.KEYBOARD, Message.LOADING_KEYOBARD);
                 console.log("Initializing db...")
                
                 //showToast(Message.LOADING_KEYOBARD);
                 initDatabase();
                
                 displayKeyboard();
+                
+                //$(showServiceAddressForm);
                 // /justTrying();//
       
             });
@@ -45,13 +49,13 @@
                 console.log("Trying to load keyboard from db");
                 loadKeyboards();
                 //if(keyboards.length == 0){
-                 //   console.log("Loading data from the service");
-                 //   loadDeviceData();
+                //   console.log("Loading data from the service");
+                //   loadDeviceData();
                 //    console.log("Inserting data to db")
-               // } else {
-               // console.log("keyboards size: " + keyboards.length);
-               // createFirstKeyboard();
-               // }
+                // } else {
+                // console.log("keyboards size: " + keyboards.length);
+                // createFirstKeyboard();
+                // }
                 // trying to load keyboard from db
                 
                 // if yes, displaying it here
@@ -66,13 +70,15 @@
             console.log("device name: " + deviceName);
             var text = document.createTextNode( "text" + deviceName );
             $('#resultText').append(deviceName);
-        */
+             */
             //$( createFirstKeyboard );
                 
             
             // creating first keyboard using device data
             function createFirstKeyboard(){
                 createKeyboard(0);
+                //$('#keyboardScreen').page();
+
             }
             
             
@@ -114,7 +120,7 @@
                 newBackSpace.setAttribute("onclick", "backSpace()");
                 newBackSpace.appendChild( newBackSpaceText );
                 $('#' +Id.KEYBOARD).append( newBackSpace );
-                  $('#' +Id.KEYBOARD).page();
+                $('#' +Id.KEYBOARD).page();
                 ;}
             
             function backSpace(){
@@ -138,7 +144,7 @@
         <div id="keyboardScreen" data-role="page" > 
             <div data-role="header">
                 <div data-role="navbar">
-                    
+
                     <a href="#keyboardScreen" data-role="button">Keyboard</a>
                     <a href="#chartScreen" data-role="button">Chart Screen</a>
                 </div>
@@ -151,6 +157,7 @@
 
             </div>
             <div id="keyboard" data-role="content">
+
             </div>
         </div>   
         <div id="chartScreen" data-role="page">
@@ -169,7 +176,7 @@
 
                 </div>
                 <div id="chart" data-role="content">
-                <div data-role="button">hi</div>
+                    <div data-role="button">hi</div>
 
                 </div>
             </div>

@@ -212,7 +212,7 @@ function saveKeyboards(transaction, results){
         }
         else {
             console.log("There is no data in db, loading it from service");
-            loadDeviceData();
+            loadDeviceData(Consts.SERVICE_LINK);
         }
         
     

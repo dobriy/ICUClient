@@ -1,11 +1,12 @@
 // loading data from the service
-function loadDeviceData(){
+function loadDeviceData(serviceAddress){
     try {
-        console.log("Loading data from " + Consts.SERVICE_LINK + Consts.LOAD_DEVICE_METHOD + Consts.DEVICE_ID);
+        serviceAddress = 'http://' + serviceAddress + Consts.LOAD_DEVICE_METHOD + Consts.DEVICE_ID;
+        console.log("Loading data from " + serviceAddress);
         //alert(Consts.LOAD_DEVICE_LINK + Consts.DEVICE_ID);
         $.ajax({
             async: false,
-            url: Consts.SERVICE_LINK + Consts.LOAD_DEVICE_METHOD + Consts.DEVICE_ID,
+            url: serviceAddress,
             dataType: "json",
             success: function(json){
                 device = json;
@@ -15,6 +16,7 @@ function loadDeviceData(){
             },
             error: function(e){
                 console.error("Could not load data. " + e.status);
+                showServiceAddressForm();
             }
         });
     }

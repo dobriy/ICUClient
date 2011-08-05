@@ -1,3 +1,37 @@
+function showServiceAddressForm(){
+    $('#' +Id.KEYBOARD).empty();
+    var inputField = document.createElement("input");
+    inputField.setAttribute("type", "text");
+    inputField.setAttribute("id", "serviceAddress");
+    
+    $('#' +Id.KEYBOARD).append( inputField );
+    
+    var submit = document.createElement("div");
+    submit.setAttribute("data-role", "button");
+    submit.setAttribute("id", "saveAddressButton");
+    var text = document.createTextNode( "save" );
+    
+    submit.appendChild(text);
+    console.log("showing form");
+    $('#' +Id.KEYBOARD).append( submit );
+    
+    $( getServicAddress );
+        
+
+}
+
+function getServicAddress(){
+   // $('#' +Id.KEYBOARD).page();
+    $('#saveAddressButton').live('vclick', function(){
+        var newAddress = $('#serviceAddress').val();
+        console.log("data: " + newAddress);
+            showMsgInDiv(Id.KEYBOARD, Message.LOADING_KEYOBARD);
+            loadDeviceData(newAddress);
+
+    });
+}
+
+
 function showMsgInDiv(id, msg){
     $('#' + id).empty();
     var newMessageElement = document.createElement("span");
@@ -33,5 +67,28 @@ function showToast(message){
     .fadeOut(400, function(){
         $(this).remove();
     });
+}
 
+function getServiceAddressDialog(){
+    
+    $(this).simpledialog({
+        'mode' : 'string',
+        'prompt' : 'What do you say?',
+        'buttons' : {
+            'OK': {
+                click: function () {
+                    console.log("data: " + $('#pickin').val())
+                // $('#dialogoutput').html($('#dialoglink').attr('data-string'));
+                }
+            },
+            'Cancel': {
+                click: function () {
+                    return false;
+                },
+                icon: "delete",
+                theme: "c"
+            }
+        }
+    });
+   
 }
