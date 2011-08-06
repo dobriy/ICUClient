@@ -1,4 +1,5 @@
-function showServiceAddressForm(){
+function showConnectionErrorDialog(){
+    /*
     $('#' +Id.KEYBOARD).empty();
     var inputField = document.createElement("input");
     inputField.setAttribute("type", "text");
@@ -16,8 +17,14 @@ function showServiceAddressForm(){
     $('#' +Id.KEYBOARD).append( submit );
     
     $( getServicAddress );
-        
+    */
+    $('#' + Id.CONNECTION_ERROR_DIALOG).show();
+    $('#keyboardContent').hide();
+}
 
+function hideConnectionErrorDialog(){
+    $('#' + Id.CONNECTION_ERROR_DIALOG).hide();
+    $('#keyboard').show();
 }
 
 function getServicAddress(){

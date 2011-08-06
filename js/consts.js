@@ -18,7 +18,8 @@ var Id = {
     KEYBOARD : 'keyboard',
     KEYBOARD_RESULT : 'keyboardResultText',
     CHART : 'chart',
-    CHART_RESULT : 'chartResultText'
+    CHART_RESULT : 'chartResultText',
+    CONNECTION_ERROR_DIALOG : 'errorDialog'
 }
 
 var DBTables = {

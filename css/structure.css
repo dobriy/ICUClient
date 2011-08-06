@@ -97,3 +97,10 @@
 #chart {
     padding: 0px 55px;
 }
+div#errorDialog{
+    width: 50%;
+   margin: auto;
+}
+#saveAddressButton{
+    width: 50%;
+}

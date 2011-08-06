@@ -17,6 +17,8 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 console.log("Starting...");
+                hideConnectionErrorDialog();
+                showConnectionErrorDialog();
                 console.log("Display loading msg");
                 //showMsgInDiv(Id.KEYBOARD, Message.LOADING_KEYOBARD);
                 console.log("Initializing db...")
@@ -24,7 +26,7 @@
                 //showToast(Message.LOADING_KEYOBARD);
                 initDatabase();
                
-                displayKeyboard();
+                //displayKeyboard();
                 
                 //$(showServiceAddressForm);
                 // /justTrying();//
@@ -147,17 +149,26 @@
 
                     <a href="#keyboardScreen" data-role="button">Keyboard</a>
                     <a href="#chartScreen" data-role="button">Chart Screen</a>
+                    <a href="#errorDialog" data-rel="dialog" data-transition="slide" data-role="button">dialog</a>
                 </div>
                 <div id="time"></div>
                 <div class="title" id="keyboardTitle">Keyboard
                 </div>
+            </div><div id="keyboardContent" data-role="content">
+
+                <div class="resultText" id="keyboardResultText">
+
+                </div>
+                <div id="keyboard">
+
+                </div>
             </div>
-
-            <div class="resultText" id="keyboardResultText" data-role="content">
-
-            </div>
-            <div id="keyboard" data-role="content">
-
+            <div id="errorDialog" data-role="content"  align="center">
+               
+                    <h2>We were unable to load data from he service, please enter address manually.</h2>
+                    <input type="text" id="serviceAddress" />
+                    <div data-role="button" id="saveAddressButton" >Save Address</div>
+                
             </div>
         </div>   
         <div id="chartScreen" data-role="page">
@@ -176,11 +187,12 @@
 
                 </div>
                 <div id="chart" data-role="content">
-                    <div data-role="button">hi</div>
+                    <div data-role="button" >hi</div>
 
                 </div>
             </div>
         </div>
+
 
     </body>
 </html>
