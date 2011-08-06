@@ -1,5 +1,5 @@
 var Consts = {
-    SERVICE_LINK: "192.168.1.3:9998",
+    SERVICE_LINK: "192.168.1.2:9998",
     DEVICE_ID : "c33177bd-c9ee-4c8c-88e0-f168f59d4f8a",
     LOAD_DEVICE_METHOD : "/ICUService/loadDeviceData/",
     EMPTY_STRING : '',
